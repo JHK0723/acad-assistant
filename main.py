@@ -8,6 +8,7 @@ from app.routers import notes_router, summarizer_router
 from app.utils.config import settings
 from app.utils.ollama_client import ollama_client
 from app.models import HealthCheckResponse, ErrorResponse
+from contextlib import asynccontextmanager
 
 # Configure structured logging
 structlog.configure(
@@ -29,13 +30,35 @@ structlog.configure(
 
 logger = structlog.get_logger()
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan context manager"""
+
+    # --- Startup ---
+    logger.info("Starting Academic Assistant API", 
+               version="1.0.0",
+               debug=settings.debug)
+    
+    # Test Ollama connection
+    try:
+        ollama_healthy = await ollama_client.health_check()
+        logger.info("Ollama health check", healthy=ollama_healthy)
+    except Exception as e:
+        logger.warning("Ollama health check failed", error=str(e))
+
+    yield
+
+    # --- Shutdown ---
+    logger.info("Shutting down Academic Assistant API")
+
 # Create FastAPI application
 app = FastAPI(
     title="Academic Assistant API",
     description="AI-powered academic assistant with notes parsing and summarization capabilities",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    lifespan=lifespan
 )
 
 # Add CORS middleware
@@ -117,7 +140,7 @@ async def http_exception_handler(request, exc):
         content=ErrorResponse(
             error=exc.detail,
             error_code=str(exc.status_code)
-        ).dict()
+        ).model_dump()
     )
 
 
@@ -134,30 +157,8 @@ async def general_exception_handler(request, exc):
             error="Internal server error",
             error_code="500",
             details={"message": str(exc) if settings.debug else "An error occurred"}
-        ).dict()
+        ).model_dump()
     )
-
-
-@app.on_event("startup")
-async def startup_event():
-    """Application startup event"""
-    logger.info("Starting Academic Assistant API", 
-               version="1.0.0",
-               debug=settings.debug)
-    
-    # Test Ollama connection
-    try:
-        ollama_healthy = await ollama_client.health_check()
-        logger.info("Ollama health check", healthy=ollama_healthy)
-    except Exception as e:
-        logger.warning("Ollama health check failed", error=str(e))
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Application shutdown event"""
-    logger.info("Shutting down Academic Assistant API")
-
 
 if __name__ == "__main__":
     import uvicorn
