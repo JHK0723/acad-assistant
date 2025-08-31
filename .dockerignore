@@ -1,0 +1,65 @@
+# Docker ignore file for Academic Assistant
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Ignore development files
+.env.local
+.env.development
+.env.test
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore logs
+logs/
+*.log
+
+# Ignore test coverage
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Ignore build artifacts
+dist/
+build/
+*.egg-info/
+
+# Ignore temporary files
+tmp/
+temp/
+
+# Ignore database files
+*.db
+*.sqlite3
+
+# Ignore documentation build
+docs/_build/
+
+# Ignore node modules (if any)
+node_modules/
+
+# Ignore git
+.git/
+.gitignore
+
+# Ignore Docker files from being copied again
+Dockerfile
+docker-compose.yml
+.dockerignore
