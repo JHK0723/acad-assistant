@@ -1,7 +1,6 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List, Dict, Any
 from enum import Enum
-import re
 
 
 class AgentType(str, Enum):
@@ -23,11 +22,12 @@ class NotesParseRequest(BaseModel):
     extract_keywords: bool = Field(default=True, description="Whether to extract keywords")
     extract_concepts: bool = Field(default=True, description="Whether to extract concepts")
     extract_questions: bool = Field(default=False, description="Whether to generate study questions")
-    
-    @validator('content')
-    def validate_content(cls, v):
+
+    @field_validator("content")
+    @classmethod
+    def validate_content(cls, v: str) -> str:
         if not v.strip():
-            raise ValueError('Content cannot be empty or only whitespace')
+            raise ValueError("Content cannot be empty or only whitespace")
         return v.strip()
 
 
@@ -38,18 +38,20 @@ class SummarizeRequest(BaseModel):
     max_length: int = Field(default=500, ge=50, le=2000, description="Maximum length of summary in words")
     focus_areas: Optional[List[str]] = Field(default=None, description="Specific areas to focus on")
     include_examples: bool = Field(default=False, description="Whether to include examples in summary")
-    
-    @validator('content')
-    def validate_content(cls, v):
+
+    @field_validator("content")
+    @classmethod
+    def validate_content(cls, v: str) -> str:
         if not v.strip():
-            raise ValueError('Content cannot be empty or only whitespace')
+            raise ValueError("Content cannot be empty or only whitespace")
         return v.strip()
-    
-    @validator('summary_type')
-    def validate_summary_type(cls, v):
+
+    @field_validator("summary_type")
+    @classmethod
+    def validate_summary_type(cls, v: str) -> str:
         allowed_types = ["bullet_points", "comprehensive", "abstract", "key_points"]
         if v not in allowed_types:
-            raise ValueError(f'Summary type must be one of: {", ".join(allowed_types)}')
+            raise ValueError(f"Summary type must be one of: {', '.join(allowed_types)}")
         return v
 
 
