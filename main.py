@@ -50,7 +50,7 @@ app = FastAPI(
     description="AI-powered academic assistant",
     docs_url="/docs",
     redoc_url="/redoc",
-    lifespan=lifespan  # 👈 replaces old startup/shutdown events
+    lifespan=lifespan  #  replaces old startup/shutdown events
 )
 
 # Add CORS middleware
