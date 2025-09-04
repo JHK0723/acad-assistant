@@ -30,7 +30,7 @@ structlog.configure(
 
 logger = structlog.get_logger()
 
-# ✅ Replaces @app.on_event("startup") and @app.on_event("shutdown")
+# Replaces @app.on_event("startup") and @app.on_event("shutdown")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Powering up AI Academic Assistant",
@@ -132,7 +132,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         content=ErrorResponse(
             error=exc.detail,
             error_code=str(exc.status_code)
-        ).model_dump()  # ✅ was .dict()
+        ).model_dump()  # was .dict()
     )
 
 
@@ -149,7 +149,7 @@ async def general_exception_handler(request: Request, exc: Exception):
             error="Internal server error",
             error_code="500",
             details={"message": str(exc) if settings.debug else "An error occurred"}
-        ).model_dump()  # ✅ was .dict()
+        ).model_dump()  # was .dict()
     )
 
 
