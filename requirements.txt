@@ -19,8 +19,14 @@ aiohttp>=3.8.0,<4.0.0
 
 # File processing
 python-docx>=1.0.0,<2.0.0
+python-pptx>=0.6.21,<1.0.0  # PowerPoint support
 PyPDF2>=3.0.0,<4.0.0
+pdfplumber>=0.9.0,<1.0.0  # Better PDF text extraction
+pdf2image>=1.16.0,<2.0.0  # Convert PDF pages to images for OCR
+pytesseract>=0.3.10,<1.0.0  # OCR for scanned PDFs
+Pillow>=9.1.0,<11.0.0  # Image processing
 python-magic-bin>=0.4.0,<1.0.0  # For Windows file type detection
+opencv-python>=4.8.0,<5.0.0  # Advanced image preprocessing for better OCR
 
 # Environment management
 python-dotenv>=1.0.0,<2.0.0

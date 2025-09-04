@@ -161,7 +161,7 @@ async def summarize_file(
             )
             
             # Process with agent
-            result = await summarizer_agent.summarize_content(request)
+            result = await summarizer_agent(request)
             
             logger.info(f"Successfully summarized {file.filename}: {len(text_content)} chars")
             return result
@@ -194,7 +194,7 @@ async def summarize_text(request: SummarizeRequest):
             )
         
         # Process with agent
-        result = await summarizer_agent.summarize_content(request)
+        result = await summarizer_agent(request)
         
         logger.info(f"Successfully summarized text: {len(request.content)} characters")
         return result
@@ -218,7 +218,7 @@ async def create_bullet_points(request: SummarizeRequest):
             focus_areas=request.focus_areas
         )
         
-        result = await summarizer_agent.summarize_content(bullet_request)
+        result = await summarizer_agent(bullet_request)
         return result
         
     except Exception as e:
@@ -238,7 +238,7 @@ async def create_abstract(request: SummarizeRequest):
             focus_areas=request.focus_areas
         )
         
-        result = await summarizer_agent.summarize_content(abstract_request)
+        result = await summarizer_agent(abstract_request)
         return result
         
     except Exception as e:

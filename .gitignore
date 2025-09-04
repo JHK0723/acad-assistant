@@ -1,11 +1,8 @@
-# =========================
 # Python
-# =========================
 __pycache__/
 *.py[cod]
 *$py.class
-
-# Distribution / packaging
+*.so
 .Python
 build/
 develop-eggs/
@@ -19,97 +16,63 @@ parts/
 sdist/
 var/
 wheels/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 MANIFEST
 
-# Virtual environments
+# Virtual Environment
 venv/
-ENV/
 env/
+ENV/
 .venv/
-.ENV/
-.env.bak/
-env.bak/
+.env/
 
-# =========================
-# FastAPI / Uvicorn
-# =========================
-*.db
-*.sqlite3
-*.db-journal
-instance/
-*.log
-logs/
-*.pid
-
-# =========================
-# Pytest / Coverage
-# =========================
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-*.hypothesis/
-.pytest_cache/
-cover/
-
-# =========================
-# IDE / Editors
-# =========================
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-.project
-.pydevproject
+*~
 
-# =========================
-# Environment variables
-# =========================
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment Variables
 .env
 .env.local
-.env.*.local
-*.secret
+.env.development.local
+.env.test.local
+.env.production.local
 
-# =========================
-# Jupyter Notebook
-# =========================
-.ipynb_checkpoints
-*.ipynb
-
-# =========================
-# OS files
-# =========================
-.DS_Store
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# =========================
-# Docker
-# =========================
-*.pid
-*.seed
-*.bak
-docker-compose.override.yml
-.docker/
-.dockerignore
-
-# =========================
-# Logs & Temp
-# =========================
+# Logs
 *.log
-*.tmp
-*.temp
-*.out
-*.err
-*.pid
+logs/
+
+# Local uploaded files
+local_files/
+temp_uploads/
+
+# Database
+*.db
+*.sqlite3
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# Pytest
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json

@@ -24,9 +24,24 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     
     # API Limits
-    max_content_length: int = 100000  # Maximum content length in characters
-    max_file_size_mb: int = 10  # Maximum file size in MB
+    max_content_length: int = 500000  # Increased for large documents
+    max_file_size_mb: int = 100  # Increased for large PDFs
     
+    # OCR & Processing
+    ocr_dpi: int = 300  # DPI for scanning PDFs
+    ocr_parallel_workers: int = 4  # Number of parallel processes for OCR
+    enable_advanced_ocr_preprocessing: bool = True # Use a more advanced image processing pipeline
+    enable_ocr_correction: bool = True  # Use LLM to correct OCR output
+    
+    # Properties for backward compatibility and easy access
+    @property
+    def MAX_CONTENT_LENGTH(self) -> int:
+        return self.max_content_length
+    
+    @property
+    def MAX_FILE_SIZE(self) -> int:
+        return self.max_file_size_mb * 1024 * 1024  # Convert MB to bytes
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

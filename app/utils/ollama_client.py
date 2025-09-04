@@ -56,34 +56,65 @@ class OllamaClient:
     
     async def parse_notes_with_ollama(self, content: str, extract_keywords: bool = True,
                                     extract_concepts: bool = True, extract_questions: bool = False) -> Dict[str, Any]:
-        """Parse notes using Ollama Mistral 7B"""
-        system_message = """You are an expert academic assistant specialized in parsing and analyzing educational content.
-        Analyze the provided content and extract structured information in a clear, organized format."""
+        """Parse notes using Ollama Mistral 7B with optimized prompts"""
         
-        prompt_parts = [
-            f"Analyze this educational content and provide structured analysis:",
-            f"\nContent: {content[:3000]}...",  # Limit content for token efficiency
-            "\nProvide analysis including:"
-        ]
-        
-        if extract_keywords:
-            prompt_parts.append("1. Important keywords with relevance scores")
+        # Build targeted prompt based on what user wants
+        prompt_parts = []
         
         if extract_concepts:
-            prompt_parts.append("2. Key concepts with definitions")
+            prompt_parts.append("""
+CONCEPTS EXTRACTION:
+Find and list the main headings, topics, and subject areas from the content. Look for:
+- Chapter titles, section headings
+- Main topics being discussed
+- Subject areas covered
+- Course modules or units
+Format as: "Concept Name: Brief description (if available)"
+""")
+        
+        if extract_keywords:
+            prompt_parts.append("""
+KEYWORDS EXTRACTION:
+Find and list important terms that appear frequently or are emphasized. Look for:
+- Bold or emphasized words
+- Technical terms
+- Repeated conceptual words
+- Domain-specific vocabulary
+Format as: "Keyword (frequency/importance)"
+""")
         
         if extract_questions:
-            prompt_parts.append("3. Study questions for review")
+            prompt_parts.append("""
+QUESTIONS EXTRACTION:
+Find existing questions in the content. Look for:
+- Text starting with Q., Ques, Question, Problem
+- Text with Ex., Eg, Example
+- Any sentence ending with "?"
+- Practice problems or exercises
+Format as: "Q: [question text]"
+""")
         
-        prompt_parts.append("\nFormat your response clearly and concisely.")
+        # Combine all requested extractions
+        if not any([extract_concepts, extract_keywords, extract_questions]):
+            base_prompt = "Provide a brief summary of the main content."
+        else:
+            base_prompt = "\n".join(prompt_parts)
         
-        prompt = "\n".join(prompt_parts)
+        system_message = """You are an efficient academic content analyzer. Extract only what is requested. Be concise and accurate. Avoid generating new content - only extract what exists in the source material."""
+        
+        prompt = f"""Analyze this educational content:
+
+{content}
+
+{base_prompt}
+
+Keep responses focused and concise. Only extract what actually exists in the content."""
         
         response = await self.generate_completion(
             prompt=prompt,
             system_message=system_message,
-            temperature=0.3,
-            max_tokens=1200
+            temperature=0.1,  # Lower temperature for more consistent extraction
+            max_tokens=2000    # Reduced for faster processing
         )
         
         return {"parsed_content": response}

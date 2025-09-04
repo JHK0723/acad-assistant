@@ -197,8 +197,7 @@ class NotesParserAgent:
                     clean_question = re.sub(r'^\d+\.?\s*', '', clean_question)  # Remove numbering
                     
                     if clean_question and '?' in clean_question:
-                        # Assign difficulty levels cyclically
-                        difficulties = ["easy", "medium", "hard"]
+                        difficulties = ["easy", "medium", "hard"] #need to figure this properly
                         difficulty = difficulties[i % len(difficulties)]
                         
                         questions.append(StudyQuestion(
