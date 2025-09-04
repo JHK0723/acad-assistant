@@ -13,6 +13,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
+    make \
+    curl \
+    libffi-dev \
+    libssl-dev \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first to leverage Docker layer caching
