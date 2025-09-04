@@ -15,7 +15,7 @@ venv.bak/
 .env.local
 .env.development
 .env.test
-
+.env
 # Ignore IDE files
 .vscode/
 .idea/
