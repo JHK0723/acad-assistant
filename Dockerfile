@@ -9,17 +9,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app
 
-# Install system dependencies (including libmagic for python-magic)
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
-    make \
-    curl \
-    libffi-dev \
-    libssl-dev \
-    libpq-dev \
-    libmagic1 \
-    libmagic-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first to leverage Docker layer caching

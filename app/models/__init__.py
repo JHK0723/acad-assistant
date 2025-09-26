@@ -3,11 +3,9 @@ from typing import Optional, List, Dict, Any
 from enum import Enum
 import re
 
-
 class AgentType(str, Enum):
     NOTES_PARSER = "notes_parser"
     SUMMARIZER = "summarizer"
-
 
 class FileFormat(str, Enum):
     PDF = "pdf"
@@ -15,85 +13,60 @@ class FileFormat(str, Enum):
     TXT = "txt"
     MD = "md"
 
-
 class NotesParseRequest(BaseModel):
-    """Request model for parsing notes"""
-    content: str = Field(..., min_length=1, max_length=50000, description="Content to parse")
-    file_format: Optional[FileFormat] = Field(default=FileFormat.TXT, description="Format of the input content")
-    extract_keywords: bool = Field(default=True, description="Whether to extract keywords")
-    extract_concepts: bool = Field(default=True, description="Whether to extract concepts")
-    extract_questions: bool = Field(default=False, description="Whether to generate study questions")
+    content: str = Field(..., min_length=1, max_length=50000)
+    file_format: Optional[FileFormat] = FileFormat.TXT
+    extract_keywords: bool = True
+    extract_concepts: bool = True
+    extract_questions: bool = False
     
     @field_validator('content')
-    @classmethod
     def validate_content(cls, v):
         if not v.strip():
-            raise ValueError('Content cannot be empty or only whitespace')
+            raise ValueError('Content cannot be empty')
         return v.strip()
-
 
 class SummarizeRequest(BaseModel):
-    """Request model for summarizing content"""
-    content: str = Field(..., min_length=1, max_length=100000, description="Content to summarize")
-    summary_type: str = Field(default="comprehensive", description="Type of summary: bullet_points, comprehensive, abstract")
-    max_length: int = Field(default=500, ge=50, le=2000, description="Maximum length of summary in words")
-    focus_areas: Optional[List[str]] = Field(default=None, description="Specific areas to focus on")
-    include_examples: bool = Field(default=False, description="Whether to include examples in summary")
-    
-    @field_validator('content')
-    @classmethod
-    def validate_content(cls, v):
-        if not v.strip():
-            raise ValueError('Content cannot be empty or only whitespace')
-        return v.strip()
+    content: str = Field(..., min_length=1, max_length=100000)
+    summary_type: str = "comprehensive"
+    max_length: int = Field(default=500, ge=50, le=2000)
+    focus_areas: Optional[List[str]] = None
     
     @field_validator('summary_type')
-    @classmethod
     def validate_summary_type(cls, v):
-        allowed_types = ["bullet_points", "comprehensive", "abstract", "key_points"]
-        if v not in allowed_types:
-            raise ValueError(f'Summary type must be one of: {", ".join(allowed_types)}')
+        allowed = ["bullet_points", "comprehensive", "abstract", "key_points"]
+        if v not in allowed:
+            raise ValueError(f'Summary type must be one of: {", ".join(allowed)}')
         return v
 
-
 class KeywordExtraction(BaseModel):
-    """Model for extracted keywords"""
     keyword: str
     importance_score: float = Field(ge=0.0, le=1.0)
     context: Optional[str] = None
 
-
 class ConceptExtraction(BaseModel):
-    """Model for extracted concepts"""
     concept: str
     definition: Optional[str] = None
     related_terms: List[str] = Field(default_factory=list)
     importance_score: float = Field(ge=0.0, le=1.0)
 
-
 class StudyQuestion(BaseModel):
-    """Model for generated study questions"""
     question: str
-    difficulty_level: str = Field(description="easy, medium, hard")
-    question_type: str = Field(description="multiple_choice, short_answer, essay")
+    difficulty_level: str
+    question_type: str
     suggested_answer: Optional[str] = None
 
-
 class NotesParseResponse(BaseModel):
-    """Response model for parsed notes"""
     success: bool
     message: str
     parsed_content: str
-    bullet_points: List[str] = Field(default_factory=list) 
     keywords: List[KeywordExtraction] = Field(default_factory=list)
     concepts: List[ConceptExtraction] = Field(default_factory=list)
     study_questions: List[StudyQuestion] = Field(default_factory=list)
     processing_time: float
     agent_used: str
 
-
 class SummaryResponse(BaseModel):
-    """Response model for summarized content"""
     success: bool
     message: str
     summary: str
@@ -104,18 +77,61 @@ class SummaryResponse(BaseModel):
     processing_time: float
     agent_used: str
 
+# Models for Question Paper Generation (NEW)
+class QuestionPaperRequest(BaseModel):
+    syllabus_text: str = Field(..., description="The syllabus content for generating the paper")
+    test_type: str = Field(..., description="Type of test: CAT-1, CAT-2, or FAT")
+    modules: List[str] = Field(..., min_items=1, description="List of modules to be covered")
+    difficulty: str = Field("medium", description="User-selected difficulty (will be overridden by test_type logic)")
+    title: str = "Question Paper"
+
+class QuestionPart(BaseModel):
+    label: Optional[str] = None
+    marks: int
+    text: str
+    module: List[str]
+    difficulty: str
+
+class Question(BaseModel):
+    q_no: int
+    marks: int
+    parts: List[QuestionPart]
+    instructions: Optional[str] = None
+
+class PaperMetadata(BaseModel):
+    title: str
+    test_type: str
+    modules: List[str]
+    difficulty: str
+    total_marks: int
+    notes: Optional[str] = None
+
+class PaperValidation(BaseModel):
+    total_marks_check: int
+    unique_questions: bool
+
+class QuestionPaperData(BaseModel):
+    metadata: PaperMetadata
+    paper: List[Question]
+    validation: PaperValidation
+
+class QuestionPaperResponse(BaseModel):
+    success: bool
+    message: str
+    paper_data: Optional[QuestionPaperData]
+    processing_time: float
+    agent_used: str
+# End of New Models
 
 class ErrorResponse(BaseModel):
-    """Standard error response model"""
     success: bool = False
     error: str
     error_code: Optional[str] = None
     details: Optional[Dict[str, Any]] = None
 
-
 class HealthCheckResponse(BaseModel):
-    """Health check response model"""
     status: str
     timestamp: str
     version: str
     agents_status: Dict[str, str]
+

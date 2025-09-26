@@ -127,7 +127,7 @@ Keep responses focused and concise. Only extract what actually exists in the con
         
         prompt_parts = [
             f"Create a {summary_type} summary of this content:",
-            f"\nContent: {content[:4000]}...",  # Limit for token efficiency
+            f"\nContent: {content}",  # No context limit
             f"\nRequirements:",
             f"- Style: {summary_type}",
             f"- Target length: {max_length} words"
@@ -144,7 +144,7 @@ Keep responses focused and concise. Only extract what actually exists in the con
             prompt=prompt,
             system_message=system_message,
             temperature=0.3,
-            max_tokens=max_length + 100
+            max_tokens=max_length + 200  # Increased buffer for better output
         )
         
         return {"summary": response}

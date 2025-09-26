@@ -61,57 +61,6 @@ class NotesParserAgent:
             agent_used=agent_used
         )
     
-    async def _generate_bullet_points(self, request: NotesParseRequest, parsed_response: Dict[str, Any]) -> List[str]:
-            """Generate clear and concise bullet points (study notes) using LLM"""
-            provider = self.primary_provider
-
-            # Explicit, strong prompt for JSON bullet points
-            prompt = f"""
-            You are an assistant that creates study notes.
-
-            Task:
-            - Convert the following parsed notes into **concise, clear bullet points**.
-            - Output must be a **valid JSON array of strings**.
-            - Each string should represent one bullet point (no numbering, no extra text).
-            - Do NOT add explanations, formatting, or anything outside JSON.
-
-            Parsed Notes Content:
-            {parsed_response["parsed_content"]}
-
-            Extracted Keywords:
-            {[kw.keyword for kw in parsed_response.get("keywords", [])]}
-
-            Extracted Concepts:
-            {[c.concept for c in parsed_response.get("concepts", [])]}
-
-            Extracted Study Questions:
-            {[q.question for q in parsed_response.get("study_questions", [])]}
-
-            Return only this format:
-            [
-            "First important bullet point",
-            "Second bullet point",
-            "Third bullet point"
-            ]
-            """
-
-            try:
-                if provider == "ollama":
-                    response = await ollama_client.generate_bullet_points(prompt)
-                else:
-                    response = await openai_client.generate_bullet_points(prompt)
-
-                bullet_points = json.loads(response)
-                if isinstance(bullet_points, list):
-                    return bullet_points
-                return [str(bp) for bp in bullet_points]
-
-            except Exception as e:
-                logger.error("Bullet point generation failed", error=str(e))
-                return []
-
- 
-    
     async def _parse_with_provider(self, request: NotesParseRequest, provider: str) -> Dict[str, Any]:
         """Parse notes with a specific provider"""
         if provider == "ollama":
